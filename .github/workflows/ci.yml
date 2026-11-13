@@ -1,33 +1,37 @@
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+name: ci
+on: [push, pull_request]
 jobs:
-  build:
+  go:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:17.2
+        env:
+          {
+            POSTGRES_USER: demo,
+            POSTGRES_PASSWORD: demo,
+            POSTGRES_DB: migrations,
+          }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U demo -d migrations"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://demo:demo@localhost:5432/migrations?sslmode=disable
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # Uncomment and adjust the steps below to match your project's setup
-
-      # - name: Install dependencies
-      #   run: npm ci
-
-      # - name: Lint
-      #   run: npm run lint
-
-      # - name: Run tests
-      #   run: npm test
-
-      # - name: Build
-      #   run: npm run build
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.24.x", cache: true }
+      - run: go mod download
+      - run: test -z "$(gofmt -l cmd internal)"
+      - run: go test ./...
+      - run: go test -race ./...
+      - run: go vet ./...
+      - run: go run ./cmd/migrate baseline
+      - run: go run ./cmd/demo seed --customers 1000
+      - run: go run ./cmd/migrate expand
+      - run: go run ./cmd/backfill -batch 100
+      - run: go run ./cmd/verify
+      - run: go test ./test/integration -run TestRealPostgresMigrationLifecycle -count=1
+        env:
+          RUN_POSTGRES_TESTS: "1"
