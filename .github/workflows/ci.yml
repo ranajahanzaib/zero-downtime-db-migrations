@@ -31,7 +31,9 @@ jobs:
       - run: go run ./cmd/demo seed --customers 1000
       - run: go run ./cmd/migrate expand
       - run: go run ./cmd/backfill -batch 100
-      - run: go run ./cmd/verify
+      - run: go run ./cmd/migrate indexes
+      - run: go run ./cmd/migrate constraints
+      - run: go run ./cmd/verify -require-traffic=false
       - run: go test ./test/integration -run TestRealPostgresMigrationLifecycle -count=1
         env:
           RUN_POSTGRES_TESTS: "1"

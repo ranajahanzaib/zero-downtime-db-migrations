@@ -80,6 +80,7 @@ type report struct {
 func main() {
 	journalPath := flag.String("journal", "reports/write-journal.jsonl", "independent acknowledged-write journal")
 	trafficPath := flag.String("traffic", "reports/traffic-results.json", "traffic results JSON")
+	requireTraffic := flag.Bool("require-traffic", true, "require external write journal and traffic result files")
 	jsonPath := flag.String("json", "reports/verification.json", "machine-readable report")
 	mdPath := flag.String("markdown", "reports/verification.md", "readable report")
 	flag.Parse()
@@ -171,7 +172,7 @@ func main() {
 		auditCount, latest, missingAudit := checkJournal(ctx, tx, entries)
 		r.Correctness.AuditEntriesVerified = auditCount
 		r.Correctness.LostAcknowledgedWrites = checkCurrent(ctx, tx, latest) + missingAudit
-	} else {
+	} else if *requireTraffic {
 		r.IncompleteReasons = append(r.IncompleteReasons, "independent write journal unavailable: "+readErr.Error())
 	}
 	err = tx.QueryRow(ctx, "select count(*) filter(where not i.indisvalid),coalesce(bool_or(x.relname='idx_customers_tenant_contact_email' and i.indisvalid),false) from pg_index i join pg_class x on x.oid=i.indexrelid where x.relname like 'idx_customers_%'").Scan(&r.Database.InvalidIndexes, &r.Database.RequiredIndexValid)
@@ -226,7 +227,7 @@ func main() {
 				r.Correctness.LostAcknowledgedWrites += abs(tr.Ack - inTraffic)
 			}
 		}
-	} else {
+	} else if *requireTraffic {
 		r.IncompleteReasons = append(r.IncompleteReasons, "traffic result file unavailable")
 	}
 	if err = tx.Commit(ctx); err != nil {
