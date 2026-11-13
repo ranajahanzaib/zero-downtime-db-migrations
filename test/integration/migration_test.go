@@ -99,19 +99,20 @@ func TestRealPostgresMigrationLifecycle(t *testing.T) {
 	}
 	shutdownCancel()
 	runSQL("migrations/expand/002_expand_and_bridge.sql")
-	var email string
+	var initialEmail *string
 	var phone, tz *string
 	var migrated *time.Time
 	var preferred string
-	if err = pool.QueryRow(ctx, "select contact_email,contact_phone,contact_timezone,contact_migrated_at,contact_details->>'preferred_language' from customers where id=$1", good).Scan(&email, &phone, &tz, &migrated, &preferred); err != nil {
+	if err = pool.QueryRow(ctx, "select contact_email,contact_phone,contact_timezone,contact_migrated_at,contact_details->>'preferred_language' from customers where id=$1", good).Scan(&initialEmail, &phone, &tz, &migrated, &preferred); err != nil {
 		t.Fatal(err)
 	}
-	if email != "before@example.test" || migrated != nil || preferred != "ur" {
-		t.Fatalf("unexpected expand state email=%s migrated=%v language=%s", email, migrated, preferred)
+	if initialEmail != nil || migrated != nil || preferred != "ur" {
+		t.Fatalf("unexpected expand state email=%v migrated=%v language=%s", initialEmail, migrated, preferred)
 	}
 	if _, err = pool.Exec(ctx, "update customers set contact_details=jsonb_set(contact_details,'{email}',to_jsonb('v1@example.test'::text),true) where id=$1", good); err != nil {
 		t.Fatal(err)
 	}
+	var email string
 	if err = pool.QueryRow(ctx, "select contact_email from customers where id=$1", good).Scan(&email); err != nil || email != "v1@example.test" {
 		t.Fatalf("V1 bridge failed: %s %v", email, err)
 	}
