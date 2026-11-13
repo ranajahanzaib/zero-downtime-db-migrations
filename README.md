@@ -134,4 +134,4 @@ The unsafe comparison is deliberately destructive and separately gated. Other fa
 
 Go, pgx/v5, PostgreSQL 17, Docker Compose, SQL migrations, `net/http`, HTML/CSS/JavaScript, and GitHub Actions. The sample uses one local database, synthetic tenants, a process-local traffic journal, and a demo fleet registry. Replicas, multi-region consumers, unknown clients, production authentication, large-scale load behavior, and backup/restore operations require deployment-specific controls.
 
-See [locking](docs/locking.md), [consistency](docs/consistency-model.md), [deployment order](docs/deployment-order.md), [rollback](docs/rollback-playbook.md), [failure scenarios](docs/failure-scenarios.md), and [production considerations](docs/production-considerations.md). The repository includes a license in `LICENSE`.
+See [locking](docs/locking.md), [consistency](docs/consistency-model.md), [deployment order](docs/deployment-order.md), [rollback](docs/rollback-playbook.md), [failure scenarios](docs/failure-scenarios.md), and [production considerations](docs/production-considerations.md). The project is MIT Licensed, see [LICENSE](LICENSE).
