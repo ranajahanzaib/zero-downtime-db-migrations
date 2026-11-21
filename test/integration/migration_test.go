@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -91,6 +92,17 @@ func TestRealPostgresMigrationLifecycle(t *testing.T) {
 	response.Body.Close()
 	if response.StatusCode != http.StatusNotFound {
 		t.Fatalf("cross-tenant V1 read returned %d, want 404", response.StatusCode)
+	}
+	patchBody := strings.NewReader(`{"expected_version":1,"contact":{"email":"before@example.test","phone":"123","timezone":"UTC"}}`)
+	patch, _ := http.NewRequestWithContext(ctx, http.MethodPatch, api.URL+"/api/customers/"+good.String(), patchBody)
+	patch.Header.Set("X-Demo-Tenant", tenant.String())
+	patchResponse, patchErr := http.DefaultClient.Do(patch)
+	if patchErr != nil {
+		t.Fatal(patchErr)
+	}
+	patchResponse.Body.Close()
+	if patchResponse.StatusCode != http.StatusOK {
+		t.Fatalf("V1 PATCH returned %d, want 200", patchResponse.StatusCode)
 	}
 	api.Close()
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), time.Second)

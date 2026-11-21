@@ -438,7 +438,7 @@ func (s *service) update(w http.ResponseWriter, r *http.Request) {
 	if s.cfg.Version == "v2" {
 		e = tx.QueryRow(r.Context(), "update customers set contact_email=$1,contact_phone=$2,contact_timezone=$3,version=version+1,updated_at=now() where id=$4 and tenant_id=$5 and version=$6 returning version", in.Contact.Email, in.Contact.Phone, in.Contact.Timezone, id, t, in.Expected).Scan(&version)
 	} else {
-		e = tx.QueryRow(r.Context(), "update customers set contact_details=jsonb_set(jsonb_set(jsonb_set(contact_details,'{email}',$1->'email',true),'{phone}',coalesce($1->'phone','null'::jsonb),true),'{timezone}',coalesce($1->'timezone','null'::jsonb),true),version=version+1,updated_at=now() where id=$2 and tenant_id=$3 and version=$4 returning version", doc, id, t, in.Expected).Scan(&version)
+		e = tx.QueryRow(r.Context(), "update customers set contact_details=jsonb_set(jsonb_set(jsonb_set(contact_details,'{email}',$1::jsonb->'email',true),'{phone}',coalesce($1::jsonb->'phone','null'::jsonb),true),'{timezone}',coalesce($1::jsonb->'timezone','null'::jsonb),true),version=version+1,updated_at=now() where id=$2 and tenant_id=$3 and version=$4 returning version", doc, id, t, in.Expected).Scan(&version)
 	}
 	if errors.Is(e, pgx.ErrNoRows) {
 		_ = tx.Rollback(r.Context())
