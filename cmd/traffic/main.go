@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -312,6 +313,9 @@ func runCycle(ctx context.Context, c *http.Client, st *stats, base, version, ten
 		classifyStatus(status, st)
 	}
 }
+
+var errRunEnded = errors.New("traffic run ended")
+
 func do(ctx context.Context, c *http.Client, method, url, tenant string, body any, retries int, st *stats) (int, []byte, error) {
 	for attempt := 0; ; attempt++ {
 		st.requests.Add(1)
@@ -329,6 +333,10 @@ func do(ctx context.Context, c *http.Client, method, url, tenant string, body an
 			req.Header.Set("Content-Type", "application/json")
 		}
 		resp, e := c.Do(req)
+		if e != nil && ctx.Err() != nil {
+			// The run's own deadline ended this in-flight request; it is not an application failure.
+			return 0, nil, errRunEnded
+		}
 		if e != nil {
 			recordLatency(st, time.Since(started))
 			if attempt < retries {
@@ -354,6 +362,9 @@ func recordLatency(st *stats, d time.Duration) {
 	st.mu.Unlock()
 }
 func classify(err error, st *stats) {
+	if errors.Is(err, errRunEnded) {
+		return
+	}
 	if os.IsTimeout(err) {
 		st.timeouts.Add(1)
 	}
