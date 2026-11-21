@@ -1,5 +1,9 @@
 # Zero downtime database migrations
 
+![Live migration dashboard during a verified demo run](docs/screenshots/overview.png)
+
+_The live dashboard after `make demo`: 12,372 customers migrated, V2 reading the new columns, verification passed._
+
 Production schema changes can break running applications or corrupt data when old and new code overlap. This executable Go and PostgreSQL reference demonstrates staged schema evolution while V1 and V2 serve real HTTP traffic.
 
 The example moves customer contact fields from JSONB into relational columns. A PostgreSQL trigger keeps both representations synchronized during the compatibility window; bounded backfill and a separate verifier gate new reads. “Zero downtime” here means measured request outcomes for a particular local synthetic run. PostgreSQL DDL still takes locks, and this project makes no availability guarantee for arbitrary production workloads.
@@ -69,7 +73,7 @@ flowchart TD
 
 ## Quick start
 
-Requires Go 1.25+ and Docker Compose.
+Requires Go 1.25+ and Docker Compose, with host ports 5432, 8081-8084 and 8090 free.
 
 ```sh
 cp .env.example .env
@@ -80,6 +84,14 @@ make demo
 `make demo` runs a repeatable safe workflow with active V1 traffic during expansion and mixed V1/V2 traffic during backfill. It verifies, switches V2 to new reads, observes more traffic, drains V1, and verifies again. It never contracts automatically. Configure workload size with `DEMO_CUSTOMERS` (default 10,000; use 100,000 for the acceptance workload), `DEMO_TRAFFIC_DURATION`, and `DEMO_OBSERVE_DURATION`.
 
 The live dashboard is at [http://localhost:8090](http://localhost:8090). It polls measured database and HTTP request metrics every two seconds. Reports are written under `reports/`.
+
+## Demo results
+
+A real `make demo` run (10,000 seeded customers, V1 and V2 serving HTTP traffic throughout) on a local Docker Compose stack finished with verifier verdict **PASS**: 0 HTTP 5xx, 0 lost acknowledged writes, 0 field mismatches, and 12,372 of 12,372 customers verified. These figures come from one local synthetic run and are not an availability guarantee.
+
+| Backfill, consistency and fleet                                                                             | Migration timeline and history                                                     |
+| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ![Backfill progress, data consistency and application fleet](docs/screenshots/backfill-and-consistency.png) | ![Migration event timeline and history](docs/screenshots/history-and-timeline.png) |
 
 ## Manual lifecycle
 
