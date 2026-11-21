@@ -4,7 +4,7 @@ Contributions that improve the examples, documentation, or tooling are welcome. 
 
 ## Development setup
 
-Install Go 1.24 or later. Docker Compose is required for PostgreSQL integration checks and the end-to-end demo.
+Install Go 1.25 or later. Docker Compose is required for PostgreSQL integration checks and the end-to-end demo.
 
 ```sh
 git clone https://github.com/ranajahanzaib/zero-downtime-db-migrations.git

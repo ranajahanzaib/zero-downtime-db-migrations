@@ -69,7 +69,7 @@ flowchart TD
 
 ## Quick start
 
-Requires Go 1.24+ and Docker Compose.
+Requires Go 1.25+ and Docker Compose.
 
 ```sh
 cp .env.example .env
