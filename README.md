@@ -146,4 +146,18 @@ The unsafe comparison is deliberately destructive and separately gated. Other fa
 
 Go, pgx/v5, PostgreSQL 17, Docker Compose, SQL migrations, `net/http`, HTML/CSS/JavaScript, and GitHub Actions. The sample uses one local database, synthetic tenants, a process-local traffic journal, and a demo fleet registry. Replicas, multi-region consumers, unknown clients, production authentication, large-scale load behavior, and backup/restore operations require deployment-specific controls.
 
-See [locking](docs/locking.md), [consistency](docs/consistency-model.md), [deployment order](docs/deployment-order.md), [rollback](docs/rollback-playbook.md), [failure scenarios](docs/failure-scenarios.md), and [production considerations](docs/production-considerations.md). The project is MIT Licensed, see [LICENSE](LICENSE).
+See [locking](docs/locking.md), [consistency](docs/consistency-model.md), [deployment order](docs/deployment-order.md), [rollback](docs/rollback-playbook.md), [failure scenarios](docs/failure-scenarios.md), and [production considerations](docs/production-considerations.md).
+
+
+## License & Custom Work
+
+[![Hire me](https://img.shields.io/badge/Open%20to%20work-work%40withrana.com-brightgreen)](mailto:work@withrana.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-workwithrana-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/workwithrana)
+[![Upwork](https://img.shields.io/badge/Upwork-Hire%20Me-14A800?style=flat&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~01bbcf6edb91a8df5f)
+[![Contra](https://img.shields.io/badge/Contra-Hire%20Me-000000?style=flat)](https://contra.com/ranajahanzaib/)
+
+**License:** MIT, see [LICENSE](LICENSE). Free for personal and commercial use.
+
+**Author:** Rana Jahanzaib
+
+**Need this built for your stack?** Email me what you're working on: work@withrana.com
+
