@@ -155,9 +155,8 @@ See [locking](docs/locking.md), [consistency](docs/consistency-model.md), [deplo
 [![Upwork](https://img.shields.io/badge/Upwork-Hire%20Me-14A800?style=flat&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~01bbcf6edb91a8df5f)
 [![Contra](https://img.shields.io/badge/Contra-Hire%20Me-000000?style=flat)](https://contra.com/ranajahanzaib/)
 
-**License:** MIT, see [LICENSE](LICENSE). Free for personal and commercial use.
+**License:** MIT, see [LICENSE](LICENSE). Free for personal, academic, and commercial use.
 
 **Author:** Rana Jahanzaib
 
 **Need this built for your stack?** Email me what you're working on: work@withrana.com
-
